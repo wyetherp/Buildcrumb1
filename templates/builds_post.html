@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} — Builds — CRUMB{% endblock %}
+
+{% block head %}
+{% if post.code and post.code_approved %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="post-page">
+
+  <a href="{{ url_for('builds_forum', slug=post.forum.slug) }}" class="back-link">← {{ post.forum.name }}</a>
+
+  <article class="post-full">
+
+    {# 1. Images #}
+    {% set imgs = post.images.split(',') if post.images else [] %}
+    {% if imgs %}
+    <div class="post-images">
+      {% for img in imgs %}{% if img.strip() %}
+        <a href="{{ img.strip() }}" target="_blank" rel="noopener" class="post-thumb">
+          <img src="{{ img.strip() }}" alt="{{ post.title }} — image {{ loop.index }}" loading="lazy">
+        </a>
+      {% endif %}{% endfor %}
+    </div>
+    {% endif %}
+
+    {# 2. Title + vote score + forum tag #}
+    <div class="post-head">
+      <div class="vote-col post-vote">
+        {% if current_user.is_authenticated %}
+        <form action="{{ url_for('builds_post_vote', id=post.id) }}" method="POST" class="vote-form">
+          <input type="hidden" name="next" value="{{ url_for('builds_post', id=post.id) }}">
+          <button type="submit" name="value" value="1" class="vote-btn {{ 'voted' if post_vote == 1 else '' }}" aria-label="Upvote">▲</button>
+          <span class="vote-score">{{ post.vote_score }}</span>
+          <button type="submit" name="value" value="-1" class="vote-btn {{ 'voted-down' if post_vote == -1 else '' }}" aria-label="Downvote">▼</button>
+        </form>
+        {% else %}
+        <div class="vote-form">
+          <span class="vote-btn disabled">▲</span>
+          <span class="vote-score">{{ post.vote_score }}</span>
+          <span class="vote-btn disabled">▼</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="post-head-main">
+        <span class="forum-tag">{{ post.forum.icon }} {{ post.forum.name }}</span>
+        {% if post.is_pinned %}<span class="pin-tag">⬡ pinned</span>{% endif %}
+        <h1 class="post-title">{{ post.title }}</h1>
+
+        {# 3. Posted by + time + difficulty + build time #}
+        <div class="post-meta">
+          <span class="crumb-tag">{{ post.author.crumb_tag }}</span>
+          <span>by <a href="{{ url_for('profile', username=post.author.username) }}" class="gold-link">{{ post.author.username }}</a></span>
+          <span class="meta-dot">·</span>
+          <span>{{ post.created_at|timeago }}</span>
+          <span class="meta-dot">·</span>
+          <span class="difficulty" title="Difficulty {{ post.difficulty }}/5">
+            {% for i in range(1, 6) %}{% if i <= post.difficulty %}<span class="star on">★</span>{% else %}<span class="star off">☆</span>{% endif %}{% endfor %}
+          </span>
+          {% if post.time_to_build %}<span class="meta-dot">·</span><span class="tag-time">⛭ {{ post.time_to_build }}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    {# 4. Description #}
+    <div class="post-section">
+      <p class="post-description">{{ post.description }}</p>
+    </div>
+
+    {# 5. Hardware list — a checklist #}
+    {% if post.hardware_list %}
+    <div class="post-section">
+      <h2 class="post-section-title"><span class="pst-icon">⬡</span> Hardware</h2>
+      <ul class="hardware-list">
+        {% for item in post.hardware_list.split('\n') %}{% if item.strip() %}
+        <li><label><input type="checkbox"><span>{{ item.strip() }}</span></label></li>
+        {% endif %}{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {# 6. Wiring — monospace #}
+    {% if post.wiring %}
+    <div class="post-section">
+      <h2 class="post-section-title"><span class="pst-icon">⬡</span> Wiring</h2>
+      <pre class="wiring-block">{{ post.wiring }}</pre>
+    </div>
+    {% endif %}
+
+    {# 7. Code #}
+    {% if post.code %}
+    <div class="post-section">
+      <h2 class="post-section-title"><span class="pst-icon">⬡</span> Code</h2>
+      {% if post.code_approved %}
+        <div class="code-actions">
+          <a href="{{ url_for('builds_download', id=post.id) }}" class="btn btn-gold btn-sm">⬇ Download code</a>
+        </div>
+        <pre class="code-block"><code>{{ post.code }}</code></pre>
+      {% else %}
+        <div class="badge-review badge-review-lg">Code submitted — under review by the Artificer.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </article>
+
+  {# 8. Threaded comments #}
+  <section class="comments" id="comments">
+    <h2 class="post-section-title"><span class="pst-icon">⬡</span> Comments <span class="device-count">{{ post.comments|length }}</span></h2>
+
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('builds_comment', id=post.id) }}" method="POST" class="comment-form">
+      <textarea name="body" class="form-input form-textarea" rows="3" placeholder="Share what you learned, ask a question…" required></textarea>
+      <button type="submit" class="btn btn-gold btn-sm">Post comment</button>
+    </form>
+    {% else %}
+    <p class="comment-signin"><a href="{{ url_for('login') }}" class="gold-link">Sign in</a> to comment.</p>
+    {% endif %}
+
+    {% if threads %}
+    <div class="comment-list">
+      {% for thread in threads %}
+      <div class="comment-thread">
+        {% set c = thread.top %}{% set is_reply = false %}
+        {% include '_comment.html' %}
+        {% for r in thread.replies %}
+          {% set c = r %}{% set is_reply = true %}
+          {% include '_comment.html' %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="comment-empty">No comments yet. Start the conversation.</p>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if post.code and post.code_approved %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>try { hljs.highlightAll(); } catch (e) {}</script>
+{% endif %}
+{% endblock %}

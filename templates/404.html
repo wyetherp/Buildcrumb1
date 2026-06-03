@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Not found — CRUMB{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card" style="text-align:center;">
+    <span class="logo-glyph large" style="opacity:0.3">⬡</span>
+    <h1 class="auth-title" style="font-size:4rem; margin:0.5rem 0;">404</h1>
+    <p class="auth-sub">This node doesn't exist in the network.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-gold" style="margin-top:2rem;">Return home →</a>
+  </div>
+</div>
+{% endblock %}

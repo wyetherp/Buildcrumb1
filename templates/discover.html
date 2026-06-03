@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Discover Builders — CRUMB{% endblock %}
+
+{% block content %}
+<div class="discover-page">
+
+  <div class="discover-header">
+    <h1 class="discover-title">The Network</h1>
+    <p class="discover-sub">Every CRUMB. Every builder. Every ecosystem.</p>
+
+    <form method="GET" class="search-form">
+      <input
+        type="text"
+        name="q"
+        value="{{ q }}"
+        placeholder="Search builders…"
+        class="search-input"
+        autocomplete="off"
+      >
+      <button type="submit" class="btn btn-gold btn-sm">Search</button>
+      {% if q %}
+        <a href="{{ url_for('discover') }}" class="btn btn-ghost btn-sm">Clear</a>
+      {% endif %}
+    </form>
+
+    {% if q %}
+      <p class="search-results-label">
+        {{ users|length }} result{{ 's' if users|length != 1 else '' }} for "{{ q }}"
+      </p>
+    {% endif %}
+  </div>
+
+  {% if users %}
+  <div class="discover-grid">
+    {% for user in users %}
+    <a href="{{ url_for('profile', username=user.username) }}" class="builder-card">
+
+      <div class="builder-card-top">
+        <span class="crumb-tag">{{ user.crumb_tag }}</span>
+        {% if user.is_founder %}
+          <span class="founder-pip" title="Founding Member">⭑</span>
+        {% endif %}
+      </div>
+
+      <div class="builder-avatar">{{ user.username[0].upper() }}</div>
+      <h3 class="builder-username">{{ user.username }}</h3>
+
+      {% if user.location %}
+        <p class="builder-location">{{ user.location }}</p>
+      {% endif %}
+
+      {% if user.bio %}
+        <p class="builder-bio">{{ user.bio[:100] }}{% if user.bio|length > 100 %}…{% endif %}</p>
+      {% endif %}
+
+      <div class="builder-devices">
+        {% for device in user.devices[:4] %}
+          <span class="device-pip device-pip-{{ device.device_type }}">
+            {% if device.device_type == 'ember' %}🜂
+            {% elif device.device_type == 'ignis' %}🔥
+            {% elif device.device_type == 'morpheus' %}🌙
+            {% else %}⚡{% endif %}
+            {{ device.name }}
+          </span>
+        {% endfor %}
+        {% if user.devices|length > 4 %}
+          <span class="device-pip-more">+{{ user.devices|length - 4 }} more</span>
+        {% endif %}
+        {% if not user.devices %}
+          <span class="device-pip-empty">No devices yet</span>
+        {% endif %}
+      </div>
+
+      <p class="builder-joined">Joined {{ user.created_at.strftime('%b %Y') }}</p>
+
+    </a>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-discover">
+    {% if q %}
+      <p>No builders found matching "{{ q }}".</p>
+      <a href="{{ url_for('discover') }}" class="btn btn-outline">See all builders</a>
+    {% else %}
+      <p>No builders yet. Be the first.</p>
+      <a href="{{ url_for('register') }}" class="btn btn-gold">Register your CRUMB →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

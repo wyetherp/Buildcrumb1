@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Get Started — CRUMB{% endblock %}
+
+{% block content %}
+<div class="getstarted-page">
+
+  <header class="getstarted-header">
+    <h1 class="getstarted-title">Get Started</h1>
+    <p class="getstarted-sub">Three paths. One destination.</p>
+  </header>
+
+  <div class="paths">
+
+    <!-- PATH 1 — Watch the series -->
+    <div class="path-card">
+      <div class="path-icon">▶</div>
+      <div class="path-body">
+        <h2 class="path-title">Watch it being built</h2>
+        <p class="path-text">
+          15 videos. Zero to AI companion. The YouTube series documents every step —
+          the mistakes included. Start with Earth Book 1.
+        </p>
+        <a href="https://www.youtube.com/@Wyetherp-1" target="_blank" rel="noopener" class="btn btn-gold">Watch on YouTube →</a>
+      </div>
+    </div>
+
+    <!-- PATH 2 — Read the builds -->
+    <div class="path-card">
+      <div class="path-icon">⚡</div>
+      <div class="path-body">
+        <h2 class="path-title">Read the build documentation</h2>
+        <p class="path-text">
+          The three founding builds — Ember, Ignis, Morpheus — are fully documented in
+          the Builds section. Hardware lists, wiring diagrams, code. Everything you need
+          to replicate them exactly.
+        </p>
+        <a href="{{ url_for('builds') }}" class="btn btn-gold">Browse builds →</a>
+      </div>
+    </div>
+
+    <!-- PATH 3 — Get a unit -->
+    <div class="path-card">
+      <div class="path-icon">⬡</div>
+      <div class="path-body">
+        <h2 class="path-title">Get a physical unit</h2>
+        <p class="path-text">
+          Pre-built units are coming. Each one ships with a unique access code that
+          registers you on buildcrumb.com as part of the founding network.
+        </p>
+        <a href="mailto:mr.barnacleez@gmail.com?subject=CRUMB%20waitlist" class="btn btn-gold">Join the waitlist →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="getstarted-divider"></div>
+
+  <div class="getstarted-foot">
+    <p class="getstarted-foot-text">
+      Everything is open source. The schematics, the firmware, the platform.
+      If you build something with it, share it. That is how the standard spreads.
+    </p>
+    <a href="https://github.com/wyetherp/crumb_main" target="_blank" rel="noopener" class="btn btn-outline">View the source on GitHub →</a>
+  </div>
+
+</div>
+{% endblock %}

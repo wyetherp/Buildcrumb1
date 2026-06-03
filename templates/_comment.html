@@ -1,0 +1,43 @@
+{# A single comment. Expects: c, is_reply, post, comment_votes #}
+<div class="comment {% if is_reply %}reply{% endif %}" id="comment-{{ c.id }}">
+
+  <div class="comment-vote">
+    {% set cv = comment_votes.get(c.id) %}
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('builds_comment_vote', id=c.id) }}" method="POST" class="vote-form vote-form-sm">
+      <input type="hidden" name="next" value="{{ url_for('builds_post', id=post.id) }}#comment-{{ c.id }}">
+      <button type="submit" name="value" value="1" class="vote-btn {{ 'voted' if cv == 1 else '' }}" aria-label="Upvote">▲</button>
+      <span class="vote-score">{{ c.vote_score }}</span>
+      <button type="submit" name="value" value="-1" class="vote-btn {{ 'voted-down' if cv == -1 else '' }}" aria-label="Downvote">▼</button>
+    </form>
+    {% else %}
+    <div class="vote-form vote-form-sm">
+      <span class="vote-btn disabled">▲</span>
+      <span class="vote-score">{{ c.vote_score }}</span>
+      <span class="vote-btn disabled">▼</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="comment-body-wrap">
+    <div class="comment-meta">
+      <span class="crumb-tag">{{ c.author.crumb_tag }}</span>
+      <span class="comment-author">{{ c.author.username }}</span>
+      {% if is_reply and c.parent %}<span class="reply-to">↳ {{ c.parent.author.username }}</span>{% endif %}
+      <span class="meta-dot">·</span>
+      <span>{{ c.created_at|timeago }}</span>
+    </div>
+    <p class="comment-text">{{ c.body }}</p>
+    {% if current_user.is_authenticated %}
+    <details class="reply-box">
+      <summary class="reply-toggle">Reply</summary>
+      <form action="{{ url_for('builds_comment', id=post.id) }}" method="POST" class="reply-form">
+        <input type="hidden" name="parent_id" value="{{ c.id }}">
+        <textarea name="body" class="form-input form-textarea" rows="2" placeholder="Reply to {{ c.author.username }}…" required></textarea>
+        <button type="submit" class="btn btn-gold btn-sm">Reply</button>
+      </form>
+    </details>
+    {% endif %}
+  </div>
+
+</div>

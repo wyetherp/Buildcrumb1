@@ -1,0 +1,22 @@
+databases:
+  - name: buildcrumb-db
+    databaseName: buildcrumb
+    user: buildcrumb
+    plan: free
+    ipAllowList: []        # internal connections only — no public access
+
+services:
+  - type: web
+    name: buildcrumb
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: buildcrumb-db
+          property: connectionString

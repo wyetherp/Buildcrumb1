@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Share a build — CRUMB{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card build-form-card">
+
+    <div class="auth-header">
+      <span class="logo-glyph large">⬡</span>
+      <h1 class="auth-title">Share a build</h1>
+      <p class="auth-sub">Document what you made so the next person can make it too.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('builds_post_new') }}" class="auth-form">
+
+      <div class="form-group">
+        <label class="form-label">Forum <span class="required">*</span></label>
+        <select name="forum_id" class="form-input select-input" required>
+          {% for f in forums %}
+          <option value="{{ f.id }}"
+            {% if (form.get('forum_id')|string == f.id|string) or (request.args.get('forum')|string == f.id|string) %}selected{% endif %}>
+            {{ f.icon }}  {{ f.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Title <span class="required">*</span></label>
+        <input type="text" name="title" class="form-input" maxlength="160" required
+               placeholder="What did you build?" value="{{ form.get('title', '') }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description <span class="required">*</span></label>
+        <textarea name="description" class="form-input form-textarea" rows="4" required
+                  placeholder="What is it? What does it do? Why did you make it?">{{ form.get('description', '') }}</textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Build time</label>
+          <input type="text" name="time_to_build" class="form-input" maxlength="60"
+                 placeholder="2 hours" value="{{ form.get('time_to_build', '') }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Difficulty</label>
+          <select name="difficulty" class="form-input select-input">
+            {% for i in range(1, 6) %}
+            <option value="{{ i }}" {% if form.get('difficulty')|string == i|string %}selected{% endif %}>
+              {{ '★' * i }}{{ '☆' * (5 - i) }}  ({{ i }}/5)
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Hardware list</label>
+        <textarea name="hardware_list" class="form-input form-textarea" rows="4"
+                  placeholder="One part per line">{{ form.get('hardware_list', '') }}</textarea>
+        <p class="field-hint">One part per line — it renders as a checklist.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Wiring</label>
+        <textarea name="wiring" class="form-input form-textarea wiring-input" rows="4"
+                  placeholder="One connection per line">{{ form.get('wiring', '') }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Image URLs</label>
+        {% for i in range(1, 6) %}
+        <input type="url" name="image{{ i }}" class="form-input image-input"
+               placeholder="https://…  (optional)" value="{{ form.get('image' ~ i, '') }}">
+        {% endfor %}
+        <p class="field-hint">Up to 5. Paste links to photos of your build.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Code <span class="field-optional">(optional)</span></label>
+        <textarea name="code" class="form-input form-textarea code-input" rows="8"
+                  placeholder="Paste firmware or scripts here.">{{ form.get('code', '') }}</textarea>
+        <p class="field-hint">Code is reviewed by the Artificer before anyone can download it.</p>
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-full btn-lg">Publish build →</button>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Sign in — CRUMB{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-header">
+      <span class="logo-glyph large">⬡</span>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Sign in to your CRUMB account.</p>
+    </div>
+
+    <form method="POST" class="auth-form">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input
+          type="text"
+          name="username"
+          class="form-input"
+          placeholder="your username"
+          required
+          autofocus
+          autocomplete="username"
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input
+          type="password"
+          name="password"
+          class="form-input"
+          placeholder="your password"
+          required
+          autocomplete="current-password"
+        >
+      </div>
+      <button type="submit" class="btn btn-gold btn-full btn-lg">
+        Sign in →
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Don't have an account?
+      <a href="{{ url_for('register') }}" class="gold-link">Register your CRUMB →</a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

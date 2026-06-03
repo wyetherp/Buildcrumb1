@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ forum.name }} — Builds — CRUMB{% endblock %}
+
+{% block content %}
+<div class="builds-page">
+
+  <a href="{{ url_for('builds') }}" class="back-link">← All builds</a>
+
+  <header class="builds-header forum-head {% if forum.slug == 'ember' %}forum-ember-head{% endif %}">
+    <span class="forum-head-icon">{{ forum.icon }}</span>
+    <h1 class="builds-title">{{ forum.name }}</h1>
+    <p class="builds-sub">{{ forum.description }}</p>
+  </header>
+
+  <div class="builds-toolbar">
+    <div class="sort-tabs">
+      <a href="{{ url_for('builds_forum', slug=forum.slug, sort='new') }}" class="sort-tab {{ 'active' if sort == 'new' else '' }}">New</a>
+      <a href="{{ url_for('builds_forum', slug=forum.slug, sort='top') }}" class="sort-tab {{ 'active' if sort == 'top' else '' }}">Top</a>
+      <a href="{{ url_for('builds_forum', slug=forum.slug, sort='hot') }}" class="sort-tab {{ 'active' if sort == 'hot' else '' }}">Hot</a>
+    </div>
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('builds_post_new') }}?forum={{ forum.id }}" class="btn btn-gold btn-sm">+ New build</a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">Sign in to post</a>
+    {% endif %}
+  </div>
+
+  {% if posts %}
+  <div class="build-feed">
+    {% for post in posts %}
+      {% include '_build_card.html' %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>No builds in {{ forum.name }} yet.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

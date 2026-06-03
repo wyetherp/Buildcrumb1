@@ -1,0 +1,51 @@
+{# Post card for the feeds. Expects: post, user_votes #}
+<div class="build-card">
+
+  <div class="vote-col">
+    {% set uv = user_votes.get(post.id) %}
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('builds_post_vote', id=post.id) }}" method="POST" class="vote-form">
+      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <button type="submit" name="value" value="1" class="vote-btn {{ 'voted' if uv == 1 else '' }}" aria-label="Upvote">▲</button>
+      <span class="vote-score">{{ post.vote_score }}</span>
+      <button type="submit" name="value" value="-1" class="vote-btn {{ 'voted-down' if uv == -1 else '' }}" aria-label="Downvote">▼</button>
+    </form>
+    {% else %}
+    <div class="vote-form">
+      <span class="vote-btn disabled">▲</span>
+      <span class="vote-score">{{ post.vote_score }}</span>
+      <span class="vote-btn disabled">▼</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="build-card-content">
+    <a href="{{ url_for('builds_post', id=post.id) }}" class="build-card-main">
+      <div class="build-card-top">
+        <span class="forum-tag">{{ post.forum.icon }} {{ post.forum.name }}</span>
+        {% if post.is_pinned %}<span class="pin-tag">⬡ pinned</span>{% endif %}
+      </div>
+      <h3 class="build-card-title">{{ post.title }}</h3>
+      <p class="build-card-meta">
+        <span class="crumb-tag">{{ post.author.crumb_tag }}</span>
+        by {{ post.author.username }} · {{ post.created_at|timeago }}
+      </p>
+      <p class="build-card-desc">{{ post.description[:120] }}{% if post.description|length > 120 %}…{% endif %}</p>
+      <div class="build-card-tags">
+        <span class="difficulty" title="Difficulty {{ post.difficulty }}/5">
+          {% for i in range(1, 6) %}{% if i <= post.difficulty %}<span class="star on">★</span>{% else %}<span class="star off">☆</span>{% endif %}{% endfor %}
+        </span>
+        {% if post.time_to_build %}<span class="tag-time">⛭ {{ post.time_to_build }}</span>{% endif %}
+      </div>
+    </a>
+    <div class="build-card-foot">
+      <a href="{{ url_for('builds_post', id=post.id) }}#comments" class="foot-link">💬 {{ post.comments|length }}</a>
+      {% if post.code and post.code_approved %}
+        <a href="{{ url_for('builds_download', id=post.id) }}" class="foot-link foot-download">⬇ code</a>
+      {% else %}
+        <span class="badge-review">under review</span>
+      {% endif %}
+    </div>
+  </div>
+
+</div>

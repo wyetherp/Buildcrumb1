@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Code Review — CRUMB{% endblock %}
+
+{% block content %}
+<div class="builds-page">
+
+  <a href="{{ url_for('builds') }}" class="back-link">← Builds</a>
+
+  <header class="builds-header">
+    <h1 class="builds-title">The Artificer's Bench</h1>
+    <p class="builds-sub">Code awaiting review before the community can download it.</p>
+  </header>
+
+  {% if posts %}
+  {% for post in posts %}
+  <div class="review-card">
+    <div class="review-head">
+      <div>
+        <h3 class="review-title">
+          <a href="{{ url_for('builds_post', id=post.id) }}" class="gold-link">{{ post.title }}</a>
+        </h3>
+        <p class="build-card-meta">
+          <span class="crumb-tag">{{ post.author.crumb_tag }}</span>
+          by {{ post.author.username }} · {{ post.created_at|timeago }} · in {{ post.forum.name }}
+        </p>
+      </div>
+      <form action="{{ url_for('builds_review') }}" method="POST">
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <button type="submit" class="btn btn-gold btn-sm">✓ Approve</button>
+      </form>
+    </div>
+    <pre class="code-block"><code>{{ post.code }}</code></pre>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <p>Nothing awaiting review. The bench is clean.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

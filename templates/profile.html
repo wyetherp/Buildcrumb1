@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }} — CRUMB{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+
+  <!-- Profile header -->
+  <div class="profile-header">
+    <div class="profile-header-inner">
+
+      <div class="profile-avatar-lg">{{ user.username[0].upper() }}</div>
+
+      <div class="profile-info">
+        <div class="profile-badges">
+          <span class="crumb-tag-lg">{{ user.crumb_tag }}</span>
+          {% if user.is_founder %}
+            <span class="founder-badge-lg">⭑ Founding Member</span>
+          {% endif %}
+        </div>
+        <h1 class="profile-username">{{ user.username }}</h1>
+        {% if user.location %}
+          <p class="profile-location">📍 {{ user.location }}</p>
+        {% endif %}
+        {% if user.bio %}
+          <p class="profile-bio">{{ user.bio }}</p>
+        {% endif %}
+        <div class="profile-meta">
+          <span>Member since {{ user.created_at.strftime('%B %Y') }}</span>
+          <span class="meta-dot">·</span>
+          <span>{{ user.days_member }} days in the network</span>
+          <span class="meta-dot">·</span>
+          <span>{{ devices|length }} device{{ 's' if devices|length != 1 else '' }}</span>
+        </div>
+      </div>
+
+      {% if is_own %}
+      <div class="profile-actions">
+        <a href="{{ url_for('edit_profile') }}" class="btn btn-outline btn-sm">Edit profile</a>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <div class="profile-body">
+
+    <!-- Ecosystem -->
+    <div class="ecosystem-section">
+      <h2 class="section-heading">
+        <span class="section-heading-icon">⬡</span>
+        Ecosystem
+        <span class="device-count">{{ devices|length }} connected</span>
+      </h2>
+
+      {% if devices %}
+      <div class="device-list">
+        {% for device in devices %}
+        <div class="device-card device-{{ device.device_type }}">
+          <div class="device-icon">
+            {% if device.device_type == 'ember' %}🜂
+            {% elif device.device_type == 'ignis' %}🔥
+            {% elif device.device_type == 'morpheus' %}🌙
+            {% else %}⚡{% endif %}
+          </div>
+          <div class="device-info">
+            <h3 class="device-name">{{ device.name }}</h3>
+            {% if device.description %}
+              <p class="device-desc">{{ device.description }}</p>
+            {% endif %}
+            <p class="device-added">Added {{ device.added_at.strftime('%b %d, %Y') }}</p>
+          </div>
+          {% if is_own %}
+          <form action="{{ url_for('remove_device', device_id=device.id) }}" method="POST" class="device-remove-form">
+            <button type="submit" class="btn-remove" onclick="return confirm('Remove {{ device.name }}?')">×</button>
+          </form>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p>No devices added yet.</p>
+      </div>
+      {% endif %}
+
+      <!-- Add device form (own profile only) -->
+      {% if is_own %}
+      <div class="add-device-section">
+        <h3 class="add-device-title">Add a device</h3>
+        <form action="{{ url_for('add_device') }}" method="POST" class="add-device-form">
+          <div class="add-device-row">
+            <select name="device_type" class="form-input select-input">
+              <option value="ember">🜂  Ember — The Oracle</option>
+              <option value="ignis">🔥  Ignis — The Light Bringer</option>
+              <option value="morpheus">🌙  Morpheus — The Dream Keeper</option>
+              <option value="custom">⚡  Custom device</option>
+            </select>
+            <input
+              type="text"
+              name="name"
+              placeholder="Device name (e.g. Ignis, Argus, Zephyr)"
+              class="form-input"
+              required
+              maxlength="80"
+            >
+          </div>
+          <input
+            type="text"
+            name="description"
+            placeholder="What does it do? Where does it live in your room?"
+            class="form-input"
+            maxlength="300"
+          >
+          <button type="submit" class="btn btn-gold btn-sm">Add to ecosystem →</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

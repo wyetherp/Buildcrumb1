@@ -1,0 +1,28 @@
+# Database
+crumb.db
+instance/
+*.db
+
+# Access codes — never commit these
+access_codes.txt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Environment
+.env
+.env.local
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

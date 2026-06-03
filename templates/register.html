@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Register — CRUMB{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-header">
+      <span class="logo-glyph large">⬡</span>
+      <h1 class="auth-title">Register your CRUMB</h1>
+      <p class="auth-sub">
+        You need a physical access code from your device packaging.
+        Each code is unique and can only be used once.
+      </p>
+    </div>
+
+    <!-- Founding member notice -->
+    <div class="founder-notice">
+      <span class="founder-dot"></span>
+      <p>
+        The first 100 registrations are <strong>Founding Members</strong> — a permanent
+        badge, a low serial number, and early access to every future capability.
+      </p>
+    </div>
+
+    <form method="POST" class="auth-form" autocomplete="off">
+
+      <!-- Access code — prominent, first -->
+      <div class="form-group code-group">
+        <label class="form-label">Access Code <span class="required">*</span></label>
+        <div class="code-field-wrap">
+          <span class="code-field-icon">⬡</span>
+          <input
+            type="text"
+            name="code"
+            value="{{ form.get('code') or request.args.get('code', '') }}"
+            placeholder="CRUMB-0001-XXXXXX"
+            class="form-input code-field"
+            required
+            autocomplete="off"
+            spellcheck="false"
+          >
+        </div>
+        <p class="field-hint">Found on the card inside your device packaging.</p>
+      </div>
+
+      <div class="form-divider">
+        <span>Your identity</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Username <span class="required">*</span></label>
+          <input
+            type="text"
+            name="username"
+            value="{{ form.get('username', '') }}"
+            placeholder="wyetherp"
+            class="form-input"
+            required
+            minlength="3"
+            maxlength="30"
+            pattern="[a-zA-Z0-9_\-]+"
+          >
+          <p class="field-hint">Letters, numbers, _ and - only. This is your public URL.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input
+            type="text"
+            name="location"
+            value="{{ form.get('location', '') }}"
+            placeholder="Philadelphia, PA"
+            class="form-input"
+            maxlength="100"
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email <span class="required">*</span></label>
+        <input
+          type="email"
+          name="email"
+          value="{{ form.get('email', '') }}"
+          placeholder="you@example.com"
+          class="form-input"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password <span class="required">*</span></label>
+        <input
+          type="password"
+          name="password"
+          placeholder="At least 8 characters"
+          class="form-input"
+          required
+          minlength="8"
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        <textarea
+          name="bio"
+          placeholder="What are you building? What inspired you to get a CRUMB?"
+          class="form-input form-textarea"
+          maxlength="300"
+          rows="3"
+        >{{ form.get('bio', '') }}</textarea>
+        <p class="field-hint">300 characters max. Shown on your profile.</p>
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-full btn-lg">
+        Register and enter the network →
+      </button>
+
+    </form>
+
+    <p class="auth-footer">
+      Already registered?
+      <a href="{{ url_for('login') }}" class="gold-link">Sign in →</a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

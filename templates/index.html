@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}CRUMB — A room that knows you{% endblock %}
+
+{% block content %}
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SECTION 1 — HERO — the two-door entrance.
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+
+  <!-- Background media. Placeholder for now — a dim room at night.
+       To use a real photo later, drop an image in here:
+         <img class="hero-photo" src="{{ url_for('static', filename='room.jpg') }}" alt="A CRUMB room at night"> -->
+  <div class="hero-media" aria-hidden="true"></div>
+  <div class="hero-scrim" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <h1 class="hero-title">
+      A room that<br>
+      <span class="gold">knows you.</span>
+    </h1>
+
+    <p class="hero-sub">
+      A small family of open-source devices that make your room feel alive.
+      The lights breathe. A voice answers when you speak. No phone, no cloud,
+      nothing to sign up for.
+    </p>
+
+    <!-- The two doors -->
+    <div class="hero-doors">
+
+      <!-- Door A — for someone holding a code. Carries the code to /register. -->
+      <form action="{{ url_for('register') }}" method="GET" class="door door-code">
+        <span class="door-label">Have a CRUMB?</span>
+        <div class="code-field-wrap">
+          <span class="code-field-icon">⬡</span>
+          <input
+            type="text"
+            name="code"
+            placeholder="CRUMB-0001-XXXX-XXXX-XXXX"
+            class="code-field"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Access code"
+          >
+        </div>
+        <button type="submit" class="btn btn-gold btn-full">Enter your access code →</button>
+      </form>
+
+      <!-- Door B — for someone just looking. Leads to the community. -->
+      <a href="{{ url_for('discover') }}" class="door door-explore">
+        <span class="door-label">New here?</span>
+        <span class="door-explore-title">See what people<br>are building.</span>
+        <span class="door-explore-cta">Explore the network →</span>
+      </a>
+
+    </div>
+
+    <p class="hero-doors-hint">
+      No device yet? <a href="{{ url_for('get_started') }}">See how to get started →</a>
+    </p>
+
+    <!-- Live, honest numbers -->
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-num">{{ stats.builders }}</span>
+        <span class="stat-label">builders</span>
+      </div>
+      <div class="stat-divider">·</div>
+      <div class="stat">
+        <span class="stat-num">{{ stats.devices }}</span>
+        <span class="stat-label">devices connected</span>
+      </div>
+      <div class="stat-divider">·</div>
+      <div class="stat">
+        <span class="stat-num gold">{{ stats.spots }}</span>
+        <span class="stat-label">founding spots left</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SECTION 2 — TRANSITION LINE
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="transition">
+  <p class="transition-line">
+    Fire didn't belong to the first person who made it.
+    It belonged to everyone who learned how.
+  </p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SECTION 3 — LIVE NETWORK TICKER — the emotional centerpiece.
+     The user list is rendered twice so the -50% CSS loop is seamless.
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="ticker-section">
+  <h2 class="ticker-heading">The people building it.</h2>
+
+  {% if users %}
+  <div class="ticker">
+    <div class="ticker-inner">
+
+      {# Copy 1 #}
+      {% for user in users %}
+      <a href="{{ url_for('profile', username=user.username) }}" class="ticker-card">
+        <span class="ticker-glyph">⬡</span>
+        <span class="ticker-name">{{ user.username }}</span>
+        <span class="ticker-tag">{{ user.crumb_tag }}</span>
+        <span class="ticker-meta">{{ user.devices|length }} device{{ 's' if user.devices|length != 1 else '' }}</span>
+        {% if user.is_founder %}<span class="ticker-founder" title="Founding Member"></span>{% endif %}
+        {% if user.location %}<span class="ticker-loc">📍 {{ user.location }}</span>{% endif %}
+      </a>
+      <span class="ticker-sep" aria-hidden="true">·</span>
+      {% endfor %}
+
+      {# Copy 2 — duplicate, hidden from assistive tech #}
+      {% for user in users %}
+      <a href="{{ url_for('profile', username=user.username) }}" class="ticker-card" aria-hidden="true" tabindex="-1">
+        <span class="ticker-glyph">⬡</span>
+        <span class="ticker-name">{{ user.username }}</span>
+        <span class="ticker-tag">{{ user.crumb_tag }}</span>
+        <span class="ticker-meta">{{ user.devices|length }} device{{ 's' if user.devices|length != 1 else '' }}</span>
+        {% if user.is_founder %}<span class="ticker-founder" title="Founding Member"></span>{% endif %}
+        {% if user.location %}<span class="ticker-loc">📍 {{ user.location }}</span>{% endif %}
+      </a>
+      <span class="ticker-sep" aria-hidden="true">·</span>
+      {% endfor %}
+
+    </div>
+  </div>
+
+  <div class="ticker-cta">
+    <a href="{{ url_for('discover') }}" class="btn btn-outline">Meet everyone building →</a>
+  </div>
+  {% else %}
+  <p class="ticker-empty">Be the first to join the network.</p>
+  <div class="ticker-cta">
+    <a href="{{ url_for('register') }}" class="btn btn-gold">Register your CRUMB →</a>
+  </div>
+  {% endif %}
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SECTION 4 — GET STARTED CARDS
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="start-section">
+  <div class="section-inner">
+    <div class="start-cards">
+
+      <div class="start-card warm">
+        <div class="start-card-icon">⚡</div>
+        <h3 class="start-card-title">Build it yourself</h3>
+        <p class="start-card-body">
+          Everything is open source. The schematics, the firmware, the code.
+          Thirty dollars in parts and a weekend is all it takes.
+        </p>
+        <div class="start-card-links">
+          <a href="{{ url_for('builds') }}" class="btn btn-gold btn-sm">Read the builds →</a>
+          <a href="https://github.com/wyetherp/crumb_main" target="_blank" rel="noopener" class="btn btn-outline btn-sm">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="start-card cool">
+        <div class="start-card-icon">⬡</div>
+        <h3 class="start-card-title">Join the waitlist</h3>
+        <p class="start-card-body">
+          Physical units are coming. Get notified when yours is ready.
+        </p>
+        <div class="start-card-links">
+          <a href="mailto:mr.barnacleez@gmail.com?subject=CRUMB%20waitlist" class="btn btn-outline btn-sm">Join the waitlist →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SECTION 5 — CLOSING
+     ════════════════════════════════════════════════════════════════════════ -->
+<section class="cta">
+  <div class="cta-inner">
+    <h2 class="cta-title">The room is waiting.</h2>
+    <a href="{{ url_for('register') }}" class="btn btn-gold btn-lg">Register your CRUMB →</a>
+  </div>
+</section>
+
+{% endblock %}
